@@ -19,10 +19,7 @@ const Login = () => {
         message.success('로그인 되었습니다');
         Router.push('/');
       }
-      message.success('문제가 발생했습니다');
     } catch(e) {
-      console.error(e);
-      message.success('문제가 발생했습니다');
       setPending(false);
     }
   };
