@@ -12,7 +12,7 @@ const Login = () => {
   const loginKakao = async (authResponse) => {
     const token = authResponse.access_token;
     const response = await axios({ method: 'get', url: 'http://localhost:4000/auth/kakao', params: { access_token: token } });
-    Cookie.set('authorization', response.data.token);
+    Cookie.set('authorization', response.token);
     message.success('로그인 되었습니다');
     Router.push('/');
   };
