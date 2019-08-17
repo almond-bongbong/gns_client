@@ -11,7 +11,7 @@ const Login = () => {
 
   const loginKakao = async (authResponse) => {
     const token = authResponse.access_token;
-    const response = await axios({ method: 'get', url: 'http://localhost:4000/auth/kakao', params: { access_token: token } });
+    const response = await axios({ method: 'get', url: '/auth/kakao', params: { access_token: token } });
     Cookie.set('authorization', response.token);
     message.success('로그인 되었습니다');
     Router.push('/');
@@ -26,7 +26,7 @@ const Login = () => {
 
   const handleAuth = async () => {
     const token = Cookie.get('authorization');
-    const response = await axios({ method: 'post', url: 'http://localhost:4000/auth', headers: { 'authorization': token } });
+    const response = await axios({ method: 'post', url: '/auth', headers: { 'authorization': token } });
     console.log(response);
   };
 
