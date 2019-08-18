@@ -5,9 +5,13 @@ import axios from 'axios';
 import useKakao from '../hooks/useKakao';
 import Cookie from 'js-cookie';
 import '../resources/styles/login.scss';
+import { useDispatch } from 'react-redux';
+import { authActions } from '../store/modules/auth';
+import { auth } from '../api/auth';
 
 const Login = () => {
   const Kakao = useKakao();
+  const dispatch = useDispatch();
   const [pending, setPending] = useState(false);
 
   const loginKakao = async (authResponse) => {
@@ -16,8 +20,12 @@ const Login = () => {
       const response = await axios({ method: 'get', url: '/auth/kakao', params: { access_token: token } });
       if (response.token) {
         Cookie.set('authorization', response.token);
+        const user = await auth(response.token);
+        dispatch(authActions.setUser(user));
         message.success('로그인 되었습니다');
-        Router.push('/');
+
+        if (response.first) Router.push('/profile/info');
+        else Router.push('/');
       } else {
         message.success('문제가 발생했습니다');
       }
@@ -37,12 +45,6 @@ const Login = () => {
         setPending(false);
       },
     });
-  };
-
-  const handleAuth = async () => {
-    const token = Cookie.get('authorization');
-    const response = await axios({ method: 'post', url: '/auth', headers: { 'authorization': token } });
-    console.log(response);
   };
 
   return (

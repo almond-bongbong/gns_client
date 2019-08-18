@@ -3,7 +3,14 @@ import Head from 'next/head';
 import { Container } from 'next/app';
 import NProgress from 'nprogress';
 import Router from 'next/router';
+import { Provider } from 'react-redux';
+import withRedux from 'next-redux-wrapper';
+import configStore from '../store/configure';
 import { initAxios } from '../config/configureAxios';
+import { cookieParser } from '../lib/cookie';
+import { makeRedirect } from '../lib/route';
+import { auth } from '../api/auth';
+import { authActions } from '../store/modules/auth';
 import '../resources/styles/style.scss';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
@@ -12,7 +19,7 @@ Router.events.on('routeChangeError', () => NProgress.done());
 
 initAxios();
 
-const MyApp = ({ Component, pageProps }) => (
+const MyApp = ({ Component, store, pageProps }) => (
   <Container>
     <Head>
       <title>azeet</title>
@@ -23,8 +30,34 @@ const MyApp = ({ Component, pageProps }) => (
       <script src="//developers.kakao.com/sdk/js/kakao.min.js" />
     </Head>
 
-    <Component {...pageProps} />
+    <Provider store={store}>
+      <Component {...pageProps} />
+    </Provider>
   </Container>
 );
 
-export default MyApp;
+MyApp.getInitialProps = async ({ Component, ctx }) => {
+  const { store, req, isServer } = ctx;
+  if (isServer) {
+    const { authorization } = cookieParser(req.headers.cookie);
+    if (authorization) {
+      try {
+        const user = await auth(authorization);
+        store.dispatch(authActions.setUser(user));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+
+  let pageProps = {};
+  if (Component.getInitialProps) { pageProps = await Component.getInitialProps(ctx); }
+
+  const { user } = store.getState().auth;
+  if (pageProps.onlyAnonymous && user) makeRedirect(ctx, '/', false);
+  if (pageProps.isPrivate && !user) makeRedirect(ctx, '/login');
+
+  return { pageProps };
+};
+
+export default withRedux(configStore)(MyApp);
