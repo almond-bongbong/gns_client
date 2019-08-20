@@ -8,6 +8,7 @@ import '../resources/styles/login.scss';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../store/modules/auth';
 import { auth } from '../api/auth';
+import { setAuthorization } from '../config/configureAxios';
 
 const Login = () => {
   const Kakao = useKakao();
@@ -23,6 +24,7 @@ const Login = () => {
         const user = await auth(response.token);
         dispatch(authActions.setUser(user));
         message.success('로그인 되었습니다');
+        setAuthorization(response.token);
 
         if (response.first) Router.push('/profile/info');
         else Router.push('/');

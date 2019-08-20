@@ -159,11 +159,11 @@ const Info = ({ profile }) => {
 };
 
 Info.getInitialProps = async ({ store }) => {
-  const myId = store.getState().auth.user.id;
+  const myId = store.getState().auth.user?.id;
   const param = {};
   param.isPrivate = true;
   try {
-    param.profile = await axios.get(`/profile/${myId}`);
+    if (myId) param.profile = await axios.get(`/profile/${myId}`);
   } catch (e) {
     console.error(e);
   }
