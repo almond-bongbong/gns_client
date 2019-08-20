@@ -5,7 +5,7 @@ import Cookie from 'js-cookie';
 export const apiUrl = process.env.NODE_ENV === 'production' ? 'https://gns-server.herokuapp.com/' : 'http://localhost:4000';
 
 export function setAuthorization(token = Cookie.get('authorization')) {
-  if (token) axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  if (token) axios.defaults.headers.common.Authorization = token;
 }
 
 export function initAxios() {
@@ -17,5 +17,5 @@ export function initAxios() {
     if (error.response) return Promise.reject(error.response);
     return Promise.reject(error);
   });
-  // setAuthorization();
+  setAuthorization();
 }

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import BasicLayout from '../../components/Layout/BasicLayout'
-import { PageHeader, Form, Button, Radio, DatePicker, Checkbox, Cascader, Input, Divider } from 'antd';
+import { PageHeader, Form, Button, Radio, DatePicker, Checkbox, Cascader, Input, Divider, message } from 'antd';
 import { useInput } from '../../hooks';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
 import sigungu from '../../constants/sigungu';
 import _ from 'lodash';
 import fp from 'lodash/fp';
+import axios from 'axios';
 import '../../resources/styles/profile.scss';
 moment.locale('ko');
 
@@ -45,21 +45,45 @@ const cityOptions = fp.pipe(
   fp.flatten,
 )(sigungu.data);
 
-const Info = () => {
-  const user = useSelector(state => state.auth.user);
-  const [nickname, setNickname] = useInput(user.nickname);
-  const [gender, setGender] = useInput(1);
-  const [birth, setBirth] = useState(moment());
-  const [games, setGames] = useState([]);
-  const [roleOfLol, setRoleOfLol] = useState([]);
-  const [roleOfOverwatch, setRoleOfOverwatch] = useState([]);
+const Info = ({ profile }) => {
+  const [pending, setPending] = useState(false);
+  const [nickname, setNickname] = useInput(profile?.user.nickname);
+  const [gender, setGender] = useInput(profile?.user.gender);
+  const [birth, setBirth] = useState(profile?.info?.birth ? moment(profile?.info?.birth) : undefined);
+  const [from, setFrom] = useState([profile?.info?.city, profile?.info?.sigungu]);
+  const [games, setGames] = useState(profile?.info?.games || []);
+  const [rolesOfLol, setRolesOfLol] = useState(profile?.info?.lol?.roles || []);
+  const [rolesOfOverwatch, setRolesOfOverwatch] = useState(profile?.info?.overwatch?.roles || []);
+  const [nameOfLol, setNameOfLol] = useInput(profile?.info?.lol?.name);
+
+  const handleSubmit = async () => {
+    try {
+      setPending(true);
+      await axios.post(`/profile`, {
+        nickname,
+        gender,
+        birth,
+        city: from[0],
+        sigungu: from[1],
+        games,
+        lol: { name: nameOfLol, roles: rolesOfLol },
+        overwatch: { roles: rolesOfOverwatch },
+      });
+      message.success('저장 되었습니다');
+    } catch (e) {
+      console.error(e);
+      message.error('문제가 발생했습니다');
+    } finally {
+      setPending(false);
+    }
+  };
 
   return (
     <BasicLayout>
       <PageHeader title="프로필" subTitle="상세한 정보를 입력할 수록 매칭 확률이 높아집니다." style={{ padding: 0 }} />
       <div className="area-form">
         <Form {...formItemLayout}>
-          <Form.Item label="성별">
+          <Form.Item label="닉네임">
             <Input value={nickname} onChange={setNickname} style={{ maxWidth: 171 }} />
           </Form.Item>
           <Form.Item label="성별">
@@ -69,10 +93,10 @@ const Info = () => {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="생년월일">
-            <DatePicker onChange={d => setBirth(d)} value={birth} />
+            <DatePicker onChange={d => setBirth(d)} value={birth} placeholder="생년월일" />
           </Form.Item>
           <Form.Item label="거주지">
-            <Cascader style={{ maxWidth: 171 }} options={cityOptions} placeholder="" />
+            <Cascader style={{ maxWidth: 171 }} options={cityOptions} placeholder="" value={from} onChange={f => setFrom(f)} />
           </Form.Item>
           <Form.Item label="플레이 중인 게임">
             <Checkbox.Group
@@ -90,11 +114,11 @@ const Info = () => {
             <div className="area-game">
               <Divider>리그 오브 레전드 추가 정보</Divider>
               <Form.Item label="소환사 명">
-                <Input placeholder="소환사 명" style={{ maxWidth: 171 }} />
+                <Input placeholder="소환사 명" onChange={setNameOfLol} value={nameOfLol} style={{ maxWidth: 171 }} />
               </Form.Item>
               <Form.Item label="역할">
                 <Checkbox.Group
-                  value={roleOfLol}
+                  value={rolesOfLol}
                   options={[
                     { label: '탑', value: 'top' },
                     { label: '미드', value: 'mid' },
@@ -102,7 +126,7 @@ const Info = () => {
                     { label: '원딜', value: 'dealer' },
                     { label: '서포터', value: 'supporter' },
                   ]}
-                  onChange={setRoleOfLol}
+                  onChange={setRolesOfLol}
                 />
               </Form.Item>
             </div>
@@ -113,20 +137,20 @@ const Info = () => {
               <Divider>오버워치 추가 정보</Divider>
               <Form.Item label="역할">
                 <Checkbox.Group
-                  value={roleOfOverwatch}
+                  value={rolesOfOverwatch}
                   options={[
                     { label: '탱커', value: 'tanker' },
                     { label: '딜러', value: 'dealer' },
                     { label: '힐러', value: 'healer' },
                   ]}
-                  onChange={setRoleOfOverwatch}
+                  onChange={setRolesOfOverwatch}
                 />
               </Form.Item>
             </div>
           )}
 
           <Form.Item {...tailFormItemLayout}>
-            <Button type="primary">제출</Button>
+            <Button type="primary" onClick={handleSubmit} loading={pending}>저장</Button>
           </Form.Item>
         </Form>
       </div>
@@ -134,6 +158,16 @@ const Info = () => {
   );
 };
 
-Info.getInitialProps = () => ({ isPrivate: true });
+Info.getInitialProps = async ({ store }) => {
+  const myId = store.getState().auth.user.id;
+  const param = {};
+  param.isPrivate = true;
+  try {
+    param.profile = await axios.get(`/profile/${myId}`);
+  } catch (e) {
+    console.error(e);
+  }
+  return param;
+};
 
 export default Info;
