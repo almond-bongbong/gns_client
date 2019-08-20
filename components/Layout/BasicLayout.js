@@ -28,7 +28,7 @@ const BasicLayout = ({ children }) => {
           }
         </div>
       </Header>
-      <Content style={{ padding: '50px 50px 0' }}>
+      <Content className="contents">
         <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>{children}</div>
       </Content>
       <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>

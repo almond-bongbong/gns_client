@@ -34,7 +34,7 @@ const Profile = () => {
             <Tooltip placement="top" title="프로필 수정">
               <Icon type="edit" key="edit" onClick={() => Router.push('/profile/info')} />
             </Tooltip>,
-            <Dropdown overlay={menu}>
+            <Dropdown overlay={menu} trigger={['click']}>
               <Icon type="ellipsis" key="ellipsis" />
             </Dropdown>,
           ]}

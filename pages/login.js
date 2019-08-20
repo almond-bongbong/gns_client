@@ -21,11 +21,9 @@ const Login = () => {
       const response = await axios({ method: 'get', url: '/auth/kakao', params: { access_token: token } });
       if (response.token) {
         Cookie.set('authorization', response.token);
-        const user = await auth(response.token);
-        dispatch(authActions.setUser(user));
+        setAuthorization();
+        dispatch(authActions.auth());
         message.success('로그인 되었습니다');
-        setAuthorization(response.token);
-
         if (response.first) Router.push('/profile/info');
         else Router.push('/');
       } else {
@@ -33,6 +31,7 @@ const Login = () => {
       }
     } catch(e) {
       console.error(e);
+      alert(JSON.stringify(e, null, 4));
       message.success('문제가 발생했습니다');
       setPending(false);
     }
@@ -67,5 +66,7 @@ const Login = () => {
     </div>
   );
 };
+
+Login.getInitialProps = () => ({ onlyAnonymous: true });
 
 export default Login;

@@ -8,6 +8,8 @@ import _ from 'lodash';
 import fp from 'lodash/fp';
 import axios from 'axios';
 import '../../resources/styles/profile.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { authActions } from '../../store/modules/auth';
 moment.locale('ko');
 
 const formItemLayout = {
@@ -46,6 +48,8 @@ const cityOptions = fp.pipe(
 )(sigungu.data);
 
 const Info = ({ profile }) => {
+  const user = useSelector(state => state.auth.user);
+  const dispatch = useDispatch();
   const [pending, setPending] = useState(false);
   const [nickname, setNickname] = useInput(profile?.user.nickname);
   const [gender, setGender] = useInput(profile?.user.gender);
@@ -70,6 +74,7 @@ const Info = ({ profile }) => {
         overwatch: { roles: rolesOfOverwatch },
       });
       message.success('저장 되었습니다');
+      dispatch(authActions.setUser({ ...user, nickname, gender }));
     } catch (e) {
       console.error(e);
       message.error('문제가 발생했습니다');

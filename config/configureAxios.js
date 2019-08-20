@@ -2,7 +2,7 @@ import axios from 'axios';
 import qs from 'query-string';
 import Cookie from 'js-cookie';
 
-export const apiUrl = process.env.NODE_ENV === 'production' ? 'https://gns-server.herokuapp.com/' : 'http://localhost:4000';
+export const apiUrl = process.env.NODE_ENV === 'production' ? 'https://gns-server.herokuapp.com/' : 'http://192.168.219.150:4000';
 
 export function setAuthorization(token = Cookie.get('authorization')) {
   if (token) axios.defaults.headers.common.Authorization = token;

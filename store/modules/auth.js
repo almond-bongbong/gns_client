@@ -1,12 +1,22 @@
 import Cookie from 'js-cookie';
 import Router from 'next/router';
+import { auth } from '../../api/auth';
 
 export const authTypes = {
+  AUTH: 'auth/AUTH',
   LOGOUT: 'auth/LOGOUT',
   SET_USER: 'auth/SET_USER',
 };
 
 export const authActions = {
+  auth: () => async (dispatch) => {
+    try {
+      const user = await auth();
+      dispatch(authActions.setUser(user));
+    } catch (e) {
+      console.error(e);
+    }
+  },
   logout: () => (dispatch) => {
     dispatch(authActions.setUser(null));
     Cookie.remove('authorization');

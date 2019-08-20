@@ -6,4 +6,10 @@
             right: 50px;
         }
     }
+    .contents {
+        padding: 50px 50px 0;
+        @media screen and (max-width: 768px) {
+            padding: 20px 15px 0;
+        }
+    }
 }

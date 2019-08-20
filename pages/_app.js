@@ -6,7 +6,7 @@ import Router from 'next/router';
 import { Provider } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
 import configStore from '../store/configure';
-import { initAxios } from '../config/configureAxios';
+import { initAxios, setAuthorization } from '../config/configureAxios';
 import { cookieParser } from '../lib/cookie';
 import { makeRedirect } from '../lib/route';
 import { auth } from '../api/auth';
@@ -42,10 +42,10 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     const { authorization } = cookieParser(req.headers.cookie);
     if (authorization) {
       try {
-        const user = await auth(authorization);
-        store.dispatch(authActions.setUser(user));
+        setAuthorization(authorization);
+        store.dispatch(authActions.auth());
       } catch (e) {
-        console.error(e);
+        // console.error(e);
       }
     }
   }
