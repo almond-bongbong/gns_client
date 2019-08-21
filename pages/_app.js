@@ -43,15 +43,17 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     if (authorization) {
       try {
         setAuthorization(authorization);
-        store.dispatch(authActions.auth());
+        await store.dispatch(authActions.auth());
       } catch (e) {
-        // console.error(e);
+        console.error(e);
       }
     }
   }
 
   let pageProps = {};
-  if (Component.getInitialProps) { pageProps = await Component.getInitialProps(ctx); }
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+  }
 
   const { user } = store.getState().auth;
   if (pageProps.onlyAnonymous && user) makeRedirect(ctx, '/', false);
