@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 const { Header, Content, Footer } = Layout;
 
 const BasicLayout = ({ children }) => {
-  const user = useSelector(state => state.auth.user);
+  const me = useSelector(state => state.auth.me);
 
   return (
     <Layout className="basic-layout">
@@ -17,12 +17,12 @@ const BasicLayout = ({ children }) => {
           mode="horizontal"
           style={{ lineHeight: '64px' }}
         >
-          <Menu.Item key="1">nav 1</Menu.Item>
+          <Menu.Item key="1">home</Menu.Item>
           <Menu.Item key="2">nav 2</Menu.Item>
           <Menu.Item key="3">nav 3</Menu.Item>
         </Menu>
         <div className="right-area">
-          {user
+          {me
             ? <Link href="/profile"><a href="/profile">프로필</a></Link>
             : <Link href="/login"><a href="/login">로그인</a></Link>
           }

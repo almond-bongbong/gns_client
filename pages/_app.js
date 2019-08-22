@@ -9,7 +9,6 @@ import configStore from '../store/configure';
 import { initAxios, setAuthorization } from '../config/configureAxios';
 import { cookieParser } from '../lib/cookie';
 import { makeRedirect } from '../lib/route';
-import { auth } from '../api/auth';
 import { authActions } from '../store/modules/auth';
 import '../resources/styles/style.scss';
 
@@ -55,9 +54,9 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     pageProps = await Component.getInitialProps(ctx);
   }
 
-  const { user } = store.getState().auth;
-  if (pageProps.onlyAnonymous && user) makeRedirect(ctx, '/', false);
-  if (pageProps.isPrivate && !user) makeRedirect(ctx, '/login');
+  const { me } = store.getState().auth;
+  if (pageProps.onlyAnonymous && me) makeRedirect(ctx, '/', false);
+  if (pageProps.isPrivate && !me) makeRedirect(ctx, '/login');
 
   return { pageProps };
 };

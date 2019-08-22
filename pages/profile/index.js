@@ -1,15 +1,16 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import BasicLayout from '../../components/Layout/BasicLayout';
-import { Card, Icon, Avatar, Dropdown, Menu, Tooltip } from 'antd';
+import { Card, Icon, Avatar, Dropdown, Menu, Tooltip, Tag } from 'antd';
 import Router from 'next/router';
 import { authActions } from '../../store/modules/auth';
 import '../../resources/styles/profile.scss';
+import axios from 'axios';
 
 const { Meta } = Card;
 
-const Profile = () => {
-  const user = useSelector(state => state.auth.user);
+const Profile = ({ lol }) => {
+  const me = useSelector(state => state.auth.me);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -24,7 +25,7 @@ const Profile = () => {
 
   return (
     <BasicLayout>
-      {user && (
+      {me && (
         <Card
           style={{ width: 300 }}
           actions={[
@@ -40,9 +41,16 @@ const Profile = () => {
           ]}
         >
           <Meta
-            avatar={<Avatar src={user.thumbnail} />}
-            title={user.nickname}
-            description="This is the description"
+            avatar={<Avatar src={me.thumbnail} />}
+            title={me.nickname}
+            description={
+              <>
+                <span>LoL : </span>
+                {lol && (
+                  <Tag>{lol.soloTier}</Tag>
+                )}
+              </>
+            }
           />
         </Card>
       )}
@@ -50,6 +58,19 @@ const Profile = () => {
   );
 };
 
-Profile.getInitialProps = () => ({ isPrivate: true });
+Profile.getInitialProps = async ({ store }) => {
+  const prop = { isPrivate: true };
+  const { id } = store.getState().auth.me;
+  try {
+    if (id) {
+      const response = await axios.get(`/game/lol/${id}`);
+      prop.lol = response.data;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  console.log(prop.lol);
+  return prop;
+};
 
 export default Profile;

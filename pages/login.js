@@ -7,7 +7,6 @@ import Cookie from 'js-cookie';
 import '../resources/styles/login.scss';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../store/modules/auth';
-import { auth } from '../api/auth';
 import { setAuthorization } from '../config/configureAxios';
 
 const Login = () => {

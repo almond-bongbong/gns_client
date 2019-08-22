@@ -13,7 +13,7 @@ export function initAxios() {
   axios.defaults.baseURL = apiUrl;
   axios.defaults.timeout = 8000;
   axios.defaults.paramsSerializer = params => qs.stringify(params, { arrayFormat: 'repeat' });
-  axios.interceptors.response.use(response => response.data, (error) => {
+  axios.interceptors.response.use(response => response, (error) => {
     if (error.response) return Promise.reject(error.response);
     return Promise.reject(error);
   });

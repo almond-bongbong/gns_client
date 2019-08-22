@@ -48,13 +48,13 @@ const cityOptions = fp.pipe(
 )(sigungu.data);
 
 const Info = ({ profile }) => {
-  const user = useSelector(state => state.auth.user);
+  const me = useSelector(state => state.auth.me);
   const dispatch = useDispatch();
   const [pending, setPending] = useState(false);
-  const [nickname, setNickname] = useInput(profile?.user.nickname);
-  const [gender, setGender] = useInput(profile?.user.gender);
-  const [birth, setBirth] = useState(profile?.info?.birth ? moment(profile?.info?.birth) : undefined);
-  const [from, setFrom] = useState([profile?.info?.city, profile?.info?.sigungu]);
+  const [nickname, setNickname] = useInput(profile?.account.nickname);
+  const [gender, setGender] = useInput(profile?.account.gender);
+  const [birth, setBirth] = useState(profile?.account?.birth ? moment(profile?.account?.birth) : undefined);
+  const [from, setFrom] = useState([profile?.account?.city, profile?.account?.sigungu]);
   const [games, setGames] = useState(profile?.info?.games || []);
   const [rolesOfLol, setRolesOfLol] = useState(profile?.info?.lol?.roles || []);
   const [rolesOfOverwatch, setRolesOfOverwatch] = useState(profile?.info?.overwatch?.roles || []);
@@ -63,7 +63,7 @@ const Info = ({ profile }) => {
   const handleSubmit = async () => {
     try {
       setPending(true);
-      await axios.post(`/profile`, {
+      await axios.post(`/account/update`, {
         nickname,
         gender,
         birth,
@@ -74,7 +74,7 @@ const Info = ({ profile }) => {
         overwatch: { roles: rolesOfOverwatch },
       });
       message.success('저장 되었습니다');
-      dispatch(authActions.setUser({ ...user, nickname, gender }));
+      dispatch(authActions.setMe({ ...me, nickname, gender }));
     } catch (e) {
       console.error(e);
       message.error('문제가 발생했습니다');
@@ -164,15 +164,17 @@ const Info = ({ profile }) => {
 };
 
 Info.getInitialProps = async ({ store }) => {
-  const myId = store.getState().auth.user?.id;
-  const param = {};
-  param.isPrivate = true;
+  const myId = store.getState().auth.me?.id;
+  const prop = { isPrivate: true };
   try {
-    if (myId) param.profile = await axios.get(`/profile/${myId}`);
+    if (myId) {
+      const { data } = await axios.get(`/account/update`);
+      prop.profile = data;
+    }
   } catch (e) {
     console.error(e);
   }
-  return param;
+  return prop;
 };
 
 export default Info;

@@ -1,43 +1,52 @@
 import Cookie from 'js-cookie';
 import Router from 'next/router';
 import { auth } from '../../api/auth';
+import { getMyAccount } from '../../api/account';
 
 export const authTypes = {
   AUTH: 'auth/AUTH',
   LOGOUT: 'auth/LOGOUT',
-  SET_USER: 'auth/SET_USER',
+  SET_ME: 'auth/SET_ME',
 };
 
 export const authActions = {
   auth: () => async (dispatch) => {
     try {
-      const user = await auth();
-      dispatch(authActions.setUser(user));
+      await auth();
+      await dispatch(authActions.fetchMyAccount());
+    } catch (e) {
+      console.error(e);
+    }
+  },
+  fetchMyAccount: () => async (dispatch) => {
+    try {
+      const { data } = await getMyAccount();
+      dispatch(authActions.setMe(data.account));
     } catch (e) {
       console.error(e);
     }
   },
   logout: () => (dispatch) => {
-    dispatch(authActions.setUser(null));
+    dispatch(authActions.setMe(null));
     Cookie.remove('authorization');
     Router.push('/');
   },
-  setUser: user => ({ type: authTypes.SET_USER, user }),
+  setMe: me => ({ type: authTypes.SET_ME, me }),
 };
 
 const initialState = {
-  user: null,
+  me: null,
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case authTypes.LOGOUT: return {
       ...state,
-      user: null,
+      me: null,
     };
-    case authTypes.SET_USER: return {
+    case authTypes.SET_ME: return {
       ...state,
-      user: action.user,
+      me: action.me,
     };
     case '': return;
     default: return state;
