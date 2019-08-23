@@ -59,6 +59,7 @@ const Info = ({ profile }) => {
   const [rolesOfLol, setRolesOfLol] = useState(profile?.info?.lol?.roles || []);
   const [rolesOfOverwatch, setRolesOfOverwatch] = useState(profile?.info?.overwatch?.roles || []);
   const [nameOfLol, setNameOfLol] = useInput(profile?.info?.lol?.name);
+  const [battleTagForOverwatch, setBattleTagForOverwatch] = useInput(profile?.info?.overwatch?.battletag);
 
   const handleSubmit = async () => {
     try {
@@ -71,7 +72,7 @@ const Info = ({ profile }) => {
         sigungu: from[1],
         games,
         lol: { name: nameOfLol, roles: rolesOfLol },
-        overwatch: { roles: rolesOfOverwatch },
+        overwatch: { battletag: battleTagForOverwatch, roles: rolesOfOverwatch },
       });
       message.success('저장 되었습니다');
       dispatch(authActions.setMe({ ...me, nickname, gender }));
@@ -140,6 +141,9 @@ const Info = ({ profile }) => {
           {games.includes('overwatch') && (
             <div className="area-game">
               <Divider>오버워치 추가 정보</Divider>
+              <Form.Item label="이름#배틀태그">
+                <Input placeholder="홍길동#1234" onChange={setBattleTagForOverwatch} value={battleTagForOverwatch} style={{ maxWidth: 171 }} />
+              </Form.Item>
               <Form.Item label="역할">
                 <Checkbox.Group
                   value={rolesOfOverwatch}

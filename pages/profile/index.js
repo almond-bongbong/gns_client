@@ -9,7 +9,7 @@ import axios from 'axios';
 
 const { Meta } = Card;
 
-const Profile = ({ lol }) => {
+const Profile = ({ lol, overwatch }) => {
   const me = useSelector(state => state.auth.me);
   const dispatch = useDispatch();
 
@@ -27,7 +27,7 @@ const Profile = ({ lol }) => {
     <BasicLayout>
       {me && (
         <Card
-          style={{ width: 300 }}
+          style={{ width: 400 }}
           actions={[
             <Tooltip placement="top" title="준비중입니다">
               <Icon type="setting" key="setting" />
@@ -44,12 +44,20 @@ const Profile = ({ lol }) => {
             avatar={<Avatar src={me.thumbnail} />}
             title={me.nickname}
             description={
-              <>
-                <span>LoL : </span>
+              <div className="game_info">
                 {lol && (
-                  <Tag>{lol.soloTier}</Tag>
+                  <div className="tag">
+                    <span>LoL : </span>
+                    <Tag>{lol.soloTier}</Tag>
+                  </div>
                 )}
-              </>
+                {overwatch && (
+                  <div className="tag">
+                    <span>Overwatch : </span>
+                    <Tag>{overwatch.grade} : {overwatch.rating}</Tag>
+                  </div>
+                )}
+              </div>
             }
           />
         </Card>
@@ -63,13 +71,19 @@ Profile.getInitialProps = async ({ store }) => {
   const { id } = store.getState().auth.me;
   try {
     if (id) {
-      const response = await axios.get(`/game/lol/${id}`);
-      prop.lol = response.data;
+      const games = await Promise.all([
+        axios.get(`/game/lol/${id}`),
+        axios.get(`/game/overwatch/${id}`),
+      ]);
+
+      console.log(games);
+
+      prop.lol = games[0].data;
+      prop.overwatch = games[1].data;
     }
   } catch (e) {
     console.error(e);
   }
-  console.log(prop.lol);
   return prop;
 };
 
