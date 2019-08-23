@@ -17,21 +17,21 @@ const Login = () => {
   const loginKakao = async (authResponse) => {
     const token = authResponse.access_token;
     try {
-      const response = await axios({ method: 'get', url: '/auth/kakao', params: { access_token: token } });
-      if (response.token) {
-        Cookie.set('authorization', response.token);
+      const { data } = await axios({ method: 'get', url: '/auth/kakao', params: { access_token: token } });
+      if (data.token) {
+        Cookie.set('authorization', data.token);
         setAuthorization();
         dispatch(authActions.auth());
         message.success('로그인 되었습니다');
-        if (response.first) Router.push('/profile/info');
+        if (data.first) Router.push('/profile/info');
         else Router.push('/');
       } else {
         message.success('문제가 발생했습니다');
       }
     } catch(e) {
       console.error(e);
-      alert(JSON.stringify(e, null, 4));
       message.success('문제가 발생했습니다');
+    } finally {
       setPending(false);
     }
   };
