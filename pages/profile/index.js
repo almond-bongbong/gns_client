@@ -76,8 +76,6 @@ Profile.getInitialProps = async ({ store }) => {
         axios.get(`/game/overwatch/${id}`),
       ]);
 
-      console.log(games);
-
       prop.lol = games[0].data;
       prop.overwatch = games[1].data;
     }
