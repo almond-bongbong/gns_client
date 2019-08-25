@@ -7,3 +7,17 @@
         margin-top: 5px;
     }
 }
+.thumbnail-wrap {
+    overflow: hidden;
+    width: 64px;
+    height: 64px;
+    margin: 30px auto 50px;
+    input[type="file"] {
+        position: absolute;
+        left: -9999px;
+    }
+    label {
+        display: block;
+        cursor: pointer;
+    }
+}

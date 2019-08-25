@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import BasicLayout from '../../components/Layout/BasicLayout'
-import { PageHeader, Form, Button, Radio, DatePicker, Checkbox, Cascader, Input, Divider, message } from 'antd';
+import { PageHeader, Form, Button, Radio, DatePicker, Checkbox, Cascader, Input, Divider, message, Avatar } from 'antd';
 import { useInput } from '../../hooks';
 import moment from 'moment';
 import sigungu from '../../constants/sigungu';
@@ -51,6 +51,7 @@ const Info = ({ profile }) => {
   const me = useSelector(state => state.auth.me);
   const dispatch = useDispatch();
   const [pending, setPending] = useState(false);
+  const [thumbnail, setThumbnail] = useState(profile?.account.thumbnail);
   const [nickname, setNickname] = useInput(profile?.account.nickname);
   const [gender, setGender] = useInput(profile?.account.gender);
   const [birth, setBirth] = useState(profile?.account?.birth ? moment(profile?.account?.birth) : undefined);
@@ -61,10 +62,23 @@ const Info = ({ profile }) => {
   const [nameOfLol, setNameOfLol] = useInput(profile?.info?.lol?.name);
   const [battleTagForOverwatch, setBattleTagForOverwatch] = useInput(profile?.info?.overwatch?.battletag);
 
+  const handleThumbnail = async (e) => {
+    const form = new FormData();
+    form.append("file", e.target.files[0]);
+
+    try {
+      const response = await axios.post('/file/upload', form, { headers: { 'Content-Type': 'multipart/form-data' }});
+      setThumbnail(response.data.file.url);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       setPending(true);
       await axios.post(`/account/update`, {
+        thumbnail,
         nickname,
         gender,
         birth,
@@ -87,6 +101,12 @@ const Info = ({ profile }) => {
   return (
     <BasicLayout>
       <PageHeader title="프로필" subTitle="상세한 정보를 입력할 수록 매칭 확률이 높아집니다." style={{ padding: 0 }} />
+      <div className="thumbnail-wrap">
+        <input type="file" id="thumbnail" accept="image/*" onChange={handleThumbnail} />
+        <label htmlFor="thumbnail">
+          <Avatar size={64} icon="user" src={thumbnail} />
+        </label>
+      </div>
       <div className="area-form">
         <Form {...formItemLayout}>
           <Form.Item label="닉네임">
