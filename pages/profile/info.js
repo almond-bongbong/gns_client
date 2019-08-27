@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import BasicLayout from '../../components/Layout/BasicLayout'
-import { PageHeader, Form, Button, Radio, DatePicker, Checkbox, Cascader, Input, Divider, message, Avatar } from 'antd';
+import {
+  PageHeader,
+  Form,
+  Button,
+  Radio,
+  DatePicker,
+  Checkbox,
+  Cascader,
+  Input,
+  Divider,
+  message,
+  Avatar,
+  Spin, Upload
+} from 'antd';
 import { useInput } from '../../hooks';
 import moment from 'moment';
 import sigungu from '../../constants/sigungu';
@@ -47,30 +60,34 @@ const cityOptions = fp.pipe(
   fp.flatten,
 )(sigungu.data);
 
-const Info = ({ profile }) => {
+const Info = ({ account }) => {
   const me = useSelector(state => state.auth.me);
   const dispatch = useDispatch();
   const [pending, setPending] = useState(false);
-  const [thumbnail, setThumbnail] = useState(profile?.account.thumbnail);
-  const [nickname, setNickname] = useInput(profile?.account.nickname);
-  const [gender, setGender] = useInput(profile?.account.gender);
-  const [birth, setBirth] = useState(profile?.account?.birth ? moment(profile?.account?.birth) : undefined);
-  const [from, setFrom] = useState([profile?.account?.city, profile?.account?.sigungu]);
-  const [games, setGames] = useState(profile?.info?.games || []);
-  const [rolesOfLol, setRolesOfLol] = useState(profile?.info?.lol?.roles || []);
-  const [rolesOfOverwatch, setRolesOfOverwatch] = useState(profile?.info?.overwatch?.roles || []);
-  const [nameOfLol, setNameOfLol] = useInput(profile?.info?.lol?.name);
-  const [battleTagForOverwatch, setBattleTagForOverwatch] = useInput(profile?.info?.overwatch?.battletag);
+  const [pendingUpload, setPendingUpload] = useState(false);
+  const [nickname, setNickname] = useInput(account?.nickname);
+  const [thumbnail, setThumbnail] = useState(account?.thumbnail);
+  const [gender, setGender] = useInput(account?.gender);
+  const [birth, setBirth] = useState(account?.birth ? moment(account?.birth) : undefined);
+  const [from, setFrom] = useState([account?.city, account?.sigungu]);
+  const [games, setGames] = useState(account?.profile?.games || []);
+  const [rolesOfLol, setRolesOfLol] = useState(account?.profile?.lol?.roles || []);
+  const [rolesOfOverwatch, setRolesOfOverwatch] = useState(account?.profile?.overwatch?.roles || []);
+  const [nameOfLol, setNameOfLol] = useInput(account?.profile?.lol?.name);
+  const [battleTagForOverwatch, setBattleTagForOverwatch] = useInput(account?.profile?.overwatch?.battletag);
 
   const handleThumbnail = async (e) => {
     const form = new FormData();
     form.append("file", e.target.files[0]);
 
     try {
+      setPendingUpload(true);
       const response = await axios.post('/file/upload', form, { headers: { 'Content-Type': 'multipart/form-data' }});
       setThumbnail(response.data.file.url);
     } catch (e) {
       console.error(e);
+    } finally {
+      setPendingUpload(false);
     }
   };
 
@@ -89,7 +106,7 @@ const Info = ({ profile }) => {
         overwatch: { battletag: battleTagForOverwatch, roles: rolesOfOverwatch },
       });
       message.success('저장 되었습니다');
-      dispatch(authActions.setMe({ ...me, nickname, gender }));
+      dispatch(authActions.setMe({ ...me, nickname, gender, thumbnail }));
     } catch (e) {
       console.error(e);
       message.error('문제가 발생했습니다');
@@ -104,7 +121,7 @@ const Info = ({ profile }) => {
       <div className="thumbnail-wrap">
         <input type="file" id="thumbnail" accept="image/*" onChange={handleThumbnail} />
         <label htmlFor="thumbnail">
-          <Avatar size={64} icon="user" src={thumbnail} />
+          {pendingUpload ? <Spin /> : <Avatar size={64} icon="user" src={thumbnail} />}
         </label>
       </div>
       <div className="area-form">
@@ -193,7 +210,7 @@ Info.getInitialProps = async ({ store }) => {
   try {
     if (myId) {
       const { data } = await axios.get(`/account/update`);
-      prop.profile = data;
+      prop.account = data;
     }
   } catch (e) {
     console.error(e);

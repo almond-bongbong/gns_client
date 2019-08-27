@@ -12,6 +12,7 @@
     width: 64px;
     height: 64px;
     margin: 30px auto 50px;
+    text-align: center;
     input[type="file"] {
         position: absolute;
         left: -9999px;
@@ -19,5 +20,8 @@
     label {
         display: block;
         cursor: pointer;
+    }
+    .ant-spin {
+        margin-top: 20px;
     }
 }

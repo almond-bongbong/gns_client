@@ -55,8 +55,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   }
 
   const { me } = store.getState().auth;
-  if (pageProps.onlyAnonymous && me) makeRedirect(ctx, '/', false);
-  if (pageProps.isPrivate && !me) makeRedirect(ctx, '/login');
+  if (pageProps?.onlyAnonymous && me) makeRedirect(ctx, '/', false);
+  if (pageProps?.isPrivate && !me) makeRedirect(ctx, '/login');
 
   return { pageProps };
 };
