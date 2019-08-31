@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import Router from 'next/router'
 import { Card, message, Spin } from 'antd';
 import axios from 'axios';
-import useKakao from '../hooks/useKakao';
+import useKakao from 'hooks/useKakao';
 import Cookie from 'js-cookie';
-import '../resources/styles/login.scss';
+import 'resources/styles/login.scss';
 import { useDispatch } from 'react-redux';
-import { authActions } from '../store/modules/auth';
-import { setAuthorization } from '../config/configureAxios';
+import { authActions } from 'store/modules/auth';
+import { setAuthorization } from 'config/configureAxios';
 
 const Login = () => {
   const Kakao = useKakao();
@@ -21,10 +21,10 @@ const Login = () => {
       if (data.token) {
         Cookie.set('authorization', data.token);
         setAuthorization();
-        dispatch(authActions.auth());
+        await dispatch(authActions.fetchMyAccount());
         message.success('로그인 되었습니다');
         if (data.first) Router.push('/profile/info');
-        else Router.push('/');
+        else Router.replace('/');
       } else {
         message.success('문제가 발생했습니다');
       }
