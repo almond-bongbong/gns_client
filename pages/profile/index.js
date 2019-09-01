@@ -1,16 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import BasicLayout from '../../components/Layout/BasicLayout';
+import BasicLayout from 'components/Layout/BasicLayout';
 import { Card, Icon, Avatar, Dropdown, Menu, Tooltip, Tag } from 'antd';
 import Router from 'next/router';
-import { authActions } from '../../store/modules/auth';
-import '../../resources/styles/profile.scss';
+import { authActions } from 'store/modules/auth';
+import 'resources/styles/profile.scss';
 import axios from 'axios';
 
 const { Meta } = Card;
 
 const Profile = ({ lol, overwatch }) => {
-  const me = useSelector(state => state.auth.me);
+  const me = useSelector((state) => state.auth.me);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -43,7 +44,7 @@ const Profile = ({ lol, overwatch }) => {
           <Meta
             avatar={<Avatar src={me.thumbnail} />}
             title={me.nickname}
-            description={
+            description={[
               <div className="game_info">
                 {lol && (
                   <div className="tag">
@@ -54,11 +55,15 @@ const Profile = ({ lol, overwatch }) => {
                 {overwatch && (
                   <div className="tag">
                     <span>Overwatch : </span>
-                    <Tag>{overwatch.grade} : {overwatch.rating}</Tag>
+                    <Tag>
+                      {overwatch.grade}
+                      :
+                      {overwatch.rating}
+                    </Tag>
                   </div>
                 )}
-              </div>
-            }
+              </div>,
+            ]}
           />
         </Card>
       )}
@@ -68,7 +73,7 @@ const Profile = ({ lol, overwatch }) => {
 
 Profile.getInitialProps = async ({ store }) => {
   const prop = { isPrivate: true };
-  const { id } = store.getState().auth.me;
+  const { id } = store.getState().auth.me || {};
   try {
     if (id) {
       const games = await Promise.all([
@@ -83,6 +88,21 @@ Profile.getInitialProps = async ({ store }) => {
     console.error(e);
   }
   return prop;
+};
+
+Profile.propTypes = {
+  lol: PropTypes.shape({
+    soloTier: PropTypes.string,
+  }),
+  overwatch: PropTypes.shape({
+    grade: PropTypes.string,
+    rating: PropTypes.string,
+  }),
+};
+
+Profile.defaultProps = {
+  lol: undefined,
+  overwatch: undefined,
 };
 
 export default Profile;

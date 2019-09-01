@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
-import { Divider, Spin, Tag } from 'antd';
+import { Spin, Tag } from 'antd';
 
 const UserInfo = ({ account }) => {
   const { id, profile } = account;
@@ -24,17 +25,18 @@ const UserInfo = ({ account }) => {
       } finally {
         setPending(false);
       }
-    })()
-  }, []);
+    })();
+  }, [id]);
 
   return (
     <div>
-      {pending ? <Spin /> : profile ? (
+      {pending && <Spin />}
+      {!pending && profile ? (
         <div>
-          {profile.games?.map(game => (
+          {profile.games?.map((game) => (
             <div key={game}>
               <b>{game}</b>
-              <span> : {profile[game]?.roles}</span>
+              <span>{profile[game]?.roles}</span>
             </div>
           ))}
           <div>
@@ -43,7 +45,7 @@ const UserInfo = ({ account }) => {
             ]}
             {overwatchInfo && [
               <Tag>{overwatchInfo.grade}</Tag>,
-              <Tag>{overwatchInfo.rating}</Tag>
+              <Tag>{overwatchInfo.rating}</Tag>,
             ]}
           </div>
         </div>
@@ -52,6 +54,19 @@ const UserInfo = ({ account }) => {
       )}
     </div>
   );
+};
+
+UserInfo.propTypes = {
+  account: PropTypes.shape({
+    id: PropTypes.number,
+    profile: PropTypes.shape({
+      games: PropTypes.arrayOf(PropTypes.string),
+    }),
+  }),
+};
+
+UserInfo.defaultProps = {
+  account: undefined,
 };
 
 export default UserInfo;

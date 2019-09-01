@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import Router from 'next/router'
-import { Card, message, Spin } from 'antd';
+import { message } from 'antd';
 import axios from 'axios';
-import useKakao from 'hooks/useKakao';
 import Cookie from 'js-cookie';
 import 'resources/styles/login.scss';
 import { useDispatch } from 'react-redux';
 import { authActions } from 'store/modules/auth';
 import { setAuthorization } from 'config/configureAxios';
+import naverAuth from 'lib/naverAuth';
+import kakaoAuth from 'lib/kakaoAuth';
+
+const { naverLogin, authUrl } = naverAuth();
+const Kakao = kakaoAuth();
 
 const Login = () => {
-  const Kakao = useKakao();
   const dispatch = useDispatch();
   const [pending, setPending] = useState(false);
 
@@ -47,20 +50,20 @@ const Login = () => {
     });
   };
 
+  const handleNaver = () => {
+    window.open(authUrl);
+  };
+
   return (
     <div id="login">
-      <div className="btn-login">
-        <Card title="로그인" bordered={false}>
-          {pending ? (
-            <div className="btn-pending-kakao">
-              <Spin size="large" />
-            </div>
-          ) : (
-            <button type="button" onClick={handleKakao}>
-              <img src="/static/images/common/btn_login_kakao.png" alt="카카오 로그인" />
-            </button>
-          )}
-        </Card>
+      <div className="area-login">
+        <div className="title">로그인</div>
+        <button type="button" onClick={handleKakao}>
+          <img src="/static/images/common/btn_login_kakao.png" alt="카카오 로그인" />
+        </button>
+        <button type="button" onClick={handleNaver}>
+          <img src="/static/images/common/btn_login_naver.png" alt="네이버 로그인" />
+        </button>
       </div>
     </div>
   );
