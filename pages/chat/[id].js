@@ -14,7 +14,7 @@ const Id = () => {
   const router = useRouter();
   const [chatRoom, setChatRoom] = useState();
   const { id } = router.query;
-  const nickname = useSelector((state) => state.auth.me.nickname);
+  const nickname = useSelector((state) => state.auth?.me?.nickname);
 
   useEffect(() => {
     (async () => {
