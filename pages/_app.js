@@ -64,7 +64,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
 };
 
 MyApp.propTypes = {
-  Component: PropTypes.node.isRequired,
+  Component: PropTypes.func.isRequired,
   store: PropTypes.shape({}).isRequired,
   pageProps: PropTypes.shape({}),
 };

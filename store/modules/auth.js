@@ -31,7 +31,7 @@ export const authActions = {
     Cookie.remove('authorization');
     Router.push('/');
   },
-  setMe: me => ({ type: authTypes.SET_ME, me }),
+  setMe: (me) => ({ type: authTypes.SET_ME, me }),
 };
 
 const initialState = {
@@ -48,7 +48,6 @@ export default (state = initialState, action) => {
       ...state,
       me: action.me,
     };
-    case '': return;
     default: return state;
   }
 };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import BasicLayout from '../../components/Layout/BasicLayout'
+import PropTypes from 'prop-types';
+import BasicLayout from 'components/Layout/BasicLayout';
 import {
   PageHeader,
   Form,
@@ -12,17 +13,17 @@ import {
   Divider,
   message,
   Avatar,
-  Spin, Upload
+  Spin,
 } from 'antd';
-import { useInput } from '../../hooks';
+import { useInput } from 'hooks';
 import moment from 'moment';
-import sigungu from '../../constants/sigungu';
+import sigungu from 'constants/sigungu';
 import _ from 'lodash';
 import fp from 'lodash/fp';
 import axios from 'axios';
-import '../../resources/styles/profile.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { authActions } from '../../store/modules/auth';
+import { authActions } from 'store/modules/auth';
+
 moment.locale('ko');
 
 const formItemLayout = {
@@ -47,21 +48,18 @@ const cityOptions = fp.pipe(
   fp.map(
     fp.pipe(
       fp.toPairs,
-      fp.map(([k, v]) =>
-        ({
-          value: k,
-          label: k,
-          children: _.map(v, s =>
-            ({ value: s, label: s }))
-        })
-      ),
-    )
+      fp.map(([k, v]) => ({
+        value: k,
+        label: k,
+        children: _.map(v, (s) => ({ value: s, label: s })),
+      })),
+    ),
   ),
   fp.flatten,
 )(sigungu.data);
 
 const Info = ({ account }) => {
-  const me = useSelector(state => state.auth.me);
+  const me = useSelector((state) => state.auth.me);
   const dispatch = useDispatch();
   const [pending, setPending] = useState(false);
   const [pendingUpload, setPendingUpload] = useState(false);
@@ -78,14 +76,14 @@ const Info = ({ account }) => {
 
   const handleThumbnail = async (e) => {
     const form = new FormData();
-    form.append("file", e.target.files[0]);
+    form.append('file', e.target.files[0]);
 
     try {
       setPendingUpload(true);
-      const response = await axios.post('/file/upload', form, { headers: { 'Content-Type': 'multipart/form-data' }});
+      const response = await axios.post('/file/upload', form, { headers: { 'Content-Type': 'multipart/form-data' } });
       setThumbnail(response.data.file.url);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     } finally {
       setPendingUpload(false);
     }
@@ -94,7 +92,7 @@ const Info = ({ account }) => {
   const handleSubmit = async () => {
     try {
       setPending(true);
-      await axios.post(`/account/update`, {
+      await axios.post('/account/update', {
         thumbnail,
         nickname,
         gender,
@@ -136,10 +134,10 @@ const Info = ({ account }) => {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="생년월일">
-            <DatePicker onChange={d => setBirth(d)} value={birth} placeholder="생년월일" />
+            <DatePicker onChange={(d) => setBirth(d)} value={birth} placeholder="생년월일" />
           </Form.Item>
           <Form.Item label="거주지">
-            <Cascader style={{ maxWidth: 171 }} options={cityOptions} placeholder="" value={from} onChange={f => setFrom(f)} />
+            <Cascader style={{ maxWidth: 171 }} options={cityOptions} placeholder="" value={from} onChange={(f) => setFrom(f)} />
           </Form.Item>
           <Form.Item label="플레이 중인 게임">
             <Checkbox.Group
@@ -209,13 +207,21 @@ Info.getInitialProps = async ({ store }) => {
   const prop = { isPrivate: true };
   try {
     if (myId) {
-      const { data } = await axios.get(`/account/update`);
+      const { data } = await axios.get('/account/update');
       prop.account = data;
     }
   } catch (e) {
     console.error(e);
   }
   return prop;
+};
+
+Info.propTypes = {
+  account: PropTypes.shape({}),
+};
+
+Info.defaultProps = {
+  account: undefined,
 };
 
 export default Info;
