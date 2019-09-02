@@ -1,16 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Head from 'next/head';
 import { Container } from 'next/app';
 import NProgress from 'nprogress';
 import Router from 'next/router';
 import { Provider } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
-import configStore from '../store/configure';
-import { initAxios, setAuthorization } from '../config/configureAxios';
-import { cookieParser } from '../lib/cookie';
-import { makeRedirect } from '../lib/route';
-import { authActions } from '../store/modules/auth';
-import '../resources/styles/style.scss';
+import configStore from 'store/configure';
+import { initAxios, setAuthorization } from 'config/configureAxios';
+import { cookieParser } from 'lib/cookie';
+import { makeRedirect } from 'lib/route';
+import { authActions } from 'store/modules/auth';
+import 'resources/styles/style.scss';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -60,6 +61,16 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   if (pageProps?.isPrivate && !me) makeRedirect(ctx, '/login');
 
   return { pageProps };
+};
+
+MyApp.propTypes = {
+  Component: PropTypes.node.isRequired,
+  store: PropTypes.shape({}).isRequired,
+  pageProps: PropTypes.shape({}),
+};
+
+MyApp.defaultProps = {
+  pageProps: undefined,
 };
 
 export default withRedux(configStore)(MyApp);
