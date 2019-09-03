@@ -2,6 +2,15 @@ import React from 'react';
 import Document from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 import { initAxios } from 'config/configureAxios';
+import * as Sentry from '@sentry/browser';
+
+process.on('unhandledRejection', (err) => {
+  Sentry.captureException(err);
+});
+
+process.on('uncaughtException', (err) => {
+  Sentry.captureException(err);
+});
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {

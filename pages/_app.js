@@ -12,7 +12,11 @@ import { cookieParser } from 'lib/cookie';
 import { makeRedirect } from 'lib/route';
 import { authActions } from 'store/modules/auth';
 import GlobalStyle from 'style/GlobalStyle';
-import BasicLayout from '../components/Layout/BasicLayout';
+import BasicLayout from 'components/Layout/BasicLayout';
+import * as Sentry from '@sentry/browser';
+import { isProduction } from 'env';
+
+if (isProduction) Sentry.init({ dsn: 'https://505087c8ac8247c48175775304a0f516@sentry.io/1550279' });
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());

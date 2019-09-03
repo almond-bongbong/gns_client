@@ -23,17 +23,17 @@ export default createGlobalStyle`
   //     border: 0;
   //     vertical-align: middle;
   // }
-  // button {
-  //     margin: 0;
-  //     padding: 0;
-  //     border: 0;
-  //     color: inherit;
-  //     background: none;
-  //     cursor: pointer;
-  // }
-  // button span {
-  //     position: relative;
-  // }
+   button {
+       margin: 0;
+       padding: 0;
+       border: 0;
+       color: inherit;
+       background: none;
+       cursor: pointer;
+   }
+   button span {
+       position: relative;
+   }
   // html, body {
   //     max-width: 100vw;
   //     background-color: #2d2d33;
