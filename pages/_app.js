@@ -11,7 +11,8 @@ import { initAxios, setAuthorization } from 'config/configureAxios';
 import { cookieParser } from 'lib/cookie';
 import { makeRedirect } from 'lib/route';
 import { authActions } from 'store/modules/auth';
-import 'resources/styles/style.scss';
+import GlobalStyle from 'style/GlobalStyle';
+import BasicLayout from '../components/Layout/BasicLayout';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -32,7 +33,10 @@ const MyApp = ({ Component, store, pageProps }) => (
     </Head>
 
     <Provider store={store}>
-      <Component {...pageProps} />
+      <GlobalStyle />
+      <BasicLayout>
+        <Component {...pageProps} />
+      </BasicLayout>
     </Provider>
   </Container>
 );

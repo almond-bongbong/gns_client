@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import Router from 'next/router'
+import Router from 'next/router';
 import { message } from 'antd';
 import axios from 'axios';
 import Cookie from 'js-cookie';
-import 'resources/styles/login.scss';
 import { useDispatch } from 'react-redux';
 import { authActions } from 'store/modules/auth';
 import { setAuthorization } from 'config/configureAxios';

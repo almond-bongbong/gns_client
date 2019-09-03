@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import BasicLayout from 'components/Layout/BasicLayout';
 import {
-  PageHeader,
-  Form,
-  Button,
-  Radio,
-  DatePicker,
-  Checkbox,
-  Cascader,
-  Input,
-  Divider,
-  message,
   Avatar,
+  Button,
+  Cascader,
+  Checkbox,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  message,
+  PageHeader,
+  Radio,
   Spin,
 } from 'antd';
 import { useInput } from 'hooks';
@@ -114,7 +113,7 @@ const Info = ({ account }) => {
   };
 
   return (
-    <BasicLayout>
+    <>
       <PageHeader title="프로필" subTitle="상세한 정보를 입력할 수록 매칭 확률이 높아집니다." style={{ padding: 0 }} />
       <div className="thumbnail-wrap">
         <input type="file" id="thumbnail" accept="image/*" onChange={handleThumbnail} />
@@ -198,7 +197,7 @@ const Info = ({ account }) => {
           </Form.Item>
         </Form>
       </div>
-    </BasicLayout>
+    </>
   );
 };
 
