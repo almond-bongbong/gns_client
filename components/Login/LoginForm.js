@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
@@ -54,7 +53,7 @@ const LoginForm = ({ fixed }) => {
       if (data.token) {
         Cookie.set('authorization', data.token);
         setAuthorization();
-        await dispatch(authActions.fetchMyAccount());
+        dispatch(authActions.setMe(data.account));
         message.success('로그인 되었습니다');
         if (data.first) Router.push('/profile/info');
         else Router.replace('/');
