@@ -80,7 +80,7 @@ const LoginForm = ({ fixed }) => {
   };
 
   const handleNaver = () => {
-    alert('준비중 입니다');
+    message.info('준비중 입니다');
     // window.open(authUrl);
   };
 
