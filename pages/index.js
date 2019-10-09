@@ -3,8 +3,8 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { Avatar, Col, List, Popover, Row } from 'antd';
 import UserInfo from 'components/Popover/UserInfo';
-import CreateChat from 'components/MessageList/CreateChat';
-import BasicLayout from 'components/Layout/BasicLayout';
+import CreateChat from 'components/ChatCreate';
+import BasicLayout from 'layout/BasicLayout';
 
 const Home = ({ users }) => (
   <BasicLayout>
