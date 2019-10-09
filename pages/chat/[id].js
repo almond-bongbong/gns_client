@@ -1,53 +1,91 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { getChatRoomById } from 'api/chatRoom';
-import { useSelector } from 'react-redux';
+import { getChatById } from 'api/chat';
 import socketIO from 'socket.io-client';
-import ChatList from 'components/ChatRoom/ChatList';
-import ChatInput from 'components/ChatRoom/ChatInput';
+import MessageList from 'components/MessageList';
+import ChatInput from 'components/ChatInput';
 import { apiUrl } from 'env/url';
+import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
-const socket = socketIO(apiUrl);
+let socket;
+const MAX_MESSAGE_LENGTH = 30;
 
-const Id = () => {
+const ChatInfoBar = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding: 10px;
+  background-color: skyblue;
+  color: #fff;
+`;
+
+const Chat = () => {
   const [messages, setMessages] = useState([]);
   const router = useRouter();
-  const [chatRoom, setChatRoom] = useState();
+  const [chat, setChat] = useState();
+  const me = useSelector((state) => state.auth.me);
   const { id } = router.query;
-  const nickname = useSelector((state) => state.auth?.me?.nickname);
+  const messageContainerRef = useRef(null);
 
   useEffect(() => {
     (async () => {
-      const { data } = await getChatRoomById(id);
-      setChatRoom(data);
-
-      socket.on('connect', () => {
-        console.log('connect socket');
-      });
-
-      socket.on('chat message', (message) => {
-        const parsedMessage = JSON.parse(message);
-        setMessages((prev) => prev.concat(parsedMessage));
-      });
+      const { data } = await getChatById(id);
+      setChat(data);
+      setMessages(data.messages.reverse());
     })();
   }, [id]);
 
-  const submitMessage = (message) => {
-    const data = { nickname, message };
-    socket.emit('chat message', JSON.stringify(data));
+  useEffect(() => {
+    socket = socketIO(apiUrl);
+
+    socket.emit('join', { id });
+
+    return () => {
+      socket.emit('disconnect');
+      socket.off();
+    };
+  }, [id]);
+
+  useEffect(() => {
+    socket.on('message', (message) => {
+      setMessages((prev) => (prev.some((m) => m.id === message.timestamp) ? prev : prev.concat(message)));
+    });
+  }, []);
+
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTo(0, messageContainerRef.current.scrollHeight);
+    }
+
+    if (messages.length > MAX_MESSAGE_LENGTH) {
+      setMessages((prev) => prev.slice(prev.length - MAX_MESSAGE_LENGTH, prev.length));
+    }
+  }, [messages]);
+
+  const sandMessage = (message) => {
+    const timestamp = Date.now();
+
+    socket.emit('sendMessage', { message, timestamp });
+    setMessages((prev) => prev.concat({
+      id: timestamp,
+      user: me.nickname,
+      text: message,
+    }));
   };
 
   return (
     <div>
-      {chatRoom && (
+      {chat && (
         <>
-          <h3>{chatRoom.title}</h3>
-          <ChatList messages={messages} />
-          <ChatInput onSubmit={submitMessage} />
+          <ChatInfoBar>{chat.title}</ChatInfoBar>
+          <MessageList messages={messages} messageContainerRef={messageContainerRef} />
+          <ChatInput onSubmit={sandMessage} />
         </>
       )}
     </div>
   );
 };
 
-export default Id;
+export default Chat;

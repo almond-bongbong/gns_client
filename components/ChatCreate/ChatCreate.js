@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Col, Form, Input, Modal, Row, Select } from 'antd';
-import * as chatRoomApi from 'api/chatRoom';
+import { createChat } from 'api/chat';
 import { useInput } from 'hooks';
+import Link from 'next/link';
 
 const { Option } = Select;
 
@@ -16,7 +17,7 @@ const formItemLayout = {
   },
 };
 
-const CreateChatRoom = () => {
+const ChatCreate = () => {
   const [chatRoomVisible, setChatRoomVisible] = useState(false);
   const [title, setTitle] = useInput('');
 
@@ -24,13 +25,16 @@ const CreateChatRoom = () => {
   const modalCloseCreateChatRoom = () => { setChatRoomVisible(false); };
 
   const createChatRoom = async () => {
-    const { data } = await chatRoomApi.createChatRoom({ title });
-    window.open(`/chat/${data.chatRoom.id}`, 'chatWindow', 'width=550, height=800');
+    const { data } = await createChat({ title });
+    window.open(`/chat/${data.chat.id}`, 'chatWindow', 'width=550, height=800');
   };
 
   return (
     <>
       <Button onClick={modalOpenCreateChatRoom}>채팅방 만들기</Button>
+      <Link href="/chat/[id]" as="chat/4">
+        <a href="/chat/4">테스트</a>
+      </Link>
       <Modal
         title="채팅방 생성"
         visible={chatRoomVisible}
@@ -57,4 +61,4 @@ const CreateChatRoom = () => {
   );
 };
 
-export default CreateChatRoom;
+export default ChatCreate;

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
-import { Container } from 'next/app';
 import NProgress from 'nprogress';
 import Router from 'next/router';
 import { Provider } from 'react-redux';
@@ -12,7 +11,6 @@ import { cookieParser } from 'lib/cookie';
 import { makeRedirect } from 'lib/route';
 import { authActions } from 'store/modules/auth';
 import GlobalStyle from 'style/GlobalStyle';
-import BasicLayout from 'components/Layout/BasicLayout';
 import * as Sentry from '@sentry/browser';
 import { isProduction } from 'env';
 
@@ -25,7 +23,7 @@ Router.events.on('routeChangeError', () => NProgress.done());
 initAxios();
 
 const MyApp = ({ Component, store, pageProps }) => (
-  <Container>
+  <>
     <Head>
       <title>azeet</title>
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -38,11 +36,9 @@ const MyApp = ({ Component, store, pageProps }) => (
 
     <Provider store={store}>
       <GlobalStyle />
-      <BasicLayout>
-        <Component {...pageProps} />
-      </BasicLayout>
+      <Component {...pageProps} />
     </Provider>
-  </Container>
+  </>
 );
 
 MyApp.getInitialProps = async ({ Component, ctx }) => {

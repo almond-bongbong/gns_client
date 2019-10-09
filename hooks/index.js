@@ -1,3 +1,2 @@
 export { default as useInput } from './useInput';
-
-export default null;
+export { default as useIsMounted } from './useIsMounted';
