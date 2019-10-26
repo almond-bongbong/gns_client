@@ -1,51 +1,34 @@
 import React from 'react';
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import { Avatar, Col, List, Popover, Row } from 'antd';
-import UserInfo from 'components/Popover/UserInfo';
-import CreateChat from 'components/ChatCreate';
+import styled from 'styled-components';
 import BasicLayout from 'layout/BasicLayout';
+import SearchTab from 'components/SearchTab';
 
-const Home = ({ users }) => (
+const BannerArea = styled.article`
+  height: 315px;
+  background-color: #15b895;
+`;
+
+const Content = styled.div`
+  width: 1000px;
+  margin: 0 auto;
+  background-color: #f7f7f7;
+`;
+
+const SearchArea = styled.div`
+  margin-top: -160px;
+  border: 1px solid #ebf0f0;
+  background-color: #fff;
+`;
+
+const Home = () => (
   <BasicLayout>
-    <Row>
-      <Col span={20}>
-        <CreateChat />
-      </Col>
-      <Col span={4}>
-        <div className="area-recommend-user">
-          <List
-            dataSource={users}
-            itemLayout="horizontal"
-            renderItem={(item) => (
-              <List.Item>
-                <Popover placement="left" content={<UserInfo account={item} />} trigger="click">
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.thumbnail} />}
-                    title={item.nickname}
-                    description=""
-                  />
-                </Popover>
-              </List.Item>
-            )}
-          />
-        </div>
-      </Col>
-    </Row>
+    <BannerArea />
+    <Content>
+      <SearchArea>
+        <SearchTab />
+      </SearchArea>
+    </Content>
   </BasicLayout>
 );
-
-Home.getInitialProps = async () => {
-  const response = await axios.get('/user/recommend');
-  return { users: response.data.users };
-};
-
-Home.propTypes = {
-  users: PropTypes.arrayOf(PropTypes.shape({})),
-};
-
-Home.defaultProps = {
-  users: [],
-};
 
 export default Home;

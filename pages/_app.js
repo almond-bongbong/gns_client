@@ -29,7 +29,6 @@ const MyApp = ({ Component, store, pageProps }) => (
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
       <meta name="theme-color" content="#ffffff" />
       <link rel="shortcut icon" href="/static/favicon.ico" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.21.4/antd.min.css" />
       <script src="//developers.kakao.com/sdk/js/kakao.min.js" />
       <script src="../static/lib/naveridlogin_js_sdk_2.0.0.js" />
     </Head>

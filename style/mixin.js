@@ -3,7 +3,7 @@ import { css } from 'styled-components';
 export const red = '#ff4d4f';
 export const blue = '#1890ff';
 export const yellow = '#fadb14';
-export const green = '#438844';
+export const green = '#16b895';
 
 export const hidden = css`
   position: absolute;
